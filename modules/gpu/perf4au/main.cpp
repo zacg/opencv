@@ -1,12 +1,14 @@
 #include <cstdio>
-#define HAVE_CUDA 1
-#include <opencv2/core/core.hpp>
-#include <opencv2/gpu/gpu.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/video/video.hpp>
-#include <opencv2/legacy/legacy.hpp>
-#include <opencv2/ts/ts.hpp>
-#include <opencv2/ts/ts_perf.hpp>
+#ifdef HAVE_CVCONFIG_H
+#include "cvconfig.h"
+#endif
+#include "opencv2/core/core.hpp"
+#include "opencv2/gpu/gpu.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/video/video.hpp"
+#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/ts/ts.hpp"
+#include "opencv2/ts/ts_perf.hpp"
 
 static void printOsInfo()
 {
@@ -75,7 +77,7 @@ int main(int argc, char* argv[])
 
 DEF_PARAM_TEST_1(Image, std::string);
 
-GPU_PERF_TEST_P(Image, HoughLinesP, testing::Values(std::string("im1_1280x800.jpg")))
+PERF_TEST_P(Image, HoughLinesP, testing::Values(std::string("im1_1280x800.jpg")))
 {
     declare.time(30.0);
 
@@ -124,7 +126,7 @@ GPU_PERF_TEST_P(Image, HoughLinesP, testing::Values(std::string("im1_1280x800.jp
 
 DEF_PARAM_TEST(Image_Depth, std::string, perf::MatDepth);
 
-GPU_PERF_TEST_P(Image_Depth, GoodFeaturesToTrack,
+PERF_TEST_P(Image_Depth, GoodFeaturesToTrack,
                 testing::Combine(
                 testing::Values(std::string("im1_1280x800.jpg")),
                 testing::Values(CV_8U, CV_16U)
@@ -192,7 +194,7 @@ typedef std::pair<std::string, std::string> string_pair;
 
 DEF_PARAM_TEST(ImagePair_Depth_GraySource, string_pair, perf::MatDepth, bool);
 
-GPU_PERF_TEST_P(ImagePair_Depth_GraySource, OpticalFlowPyrLKSparse,
+PERF_TEST_P(ImagePair_Depth_GraySource, OpticalFlowPyrLKSparse,
                 testing::Combine(
                     testing::Values(string_pair("im1_1280x800.jpg", "im2_1280x800.jpg")),
                     testing::Values(CV_8U, CV_16U),
@@ -286,7 +288,7 @@ GPU_PERF_TEST_P(ImagePair_Depth_GraySource, OpticalFlowPyrLKSparse,
 
 DEF_PARAM_TEST(ImagePair_Depth, string_pair, perf::MatDepth);
 
-GPU_PERF_TEST_P(ImagePair_Depth, OpticalFlowFarneback,
+PERF_TEST_P(ImagePair_Depth, OpticalFlowFarneback,
                 testing::Combine(
                     testing::Values(string_pair("im1_1280x800.jpg", "im2_1280x800.jpg")),
                     testing::Values(CV_8U, CV_16U)
@@ -383,7 +385,7 @@ void calcOpticalFlowBM(const cv::Mat& prev, const cv::Mat& curr,
 
 DEF_PARAM_TEST(ImagePair_BlockSize_ShiftSize_MaxRange, string_pair, cv::Size, cv::Size, cv::Size);
 
-GPU_PERF_TEST_P(ImagePair_BlockSize_ShiftSize_MaxRange, OpticalFlowBM,
+PERF_TEST_P(ImagePair_BlockSize_ShiftSize_MaxRange, OpticalFlowBM,
                 testing::Combine(
                     testing::Values(string_pair("im1_1280x800.jpg", "im2_1280x800.jpg")),
                     testing::Values(cv::Size(16, 16)),
@@ -434,7 +436,7 @@ GPU_PERF_TEST_P(ImagePair_BlockSize_ShiftSize_MaxRange, OpticalFlowBM,
     SANITY_CHECK(0);
 }
 
-GPU_PERF_TEST_P(ImagePair_BlockSize_ShiftSize_MaxRange, FastOpticalFlowBM,
+PERF_TEST_P(ImagePair_BlockSize_ShiftSize_MaxRange, FastOpticalFlowBM,
                 testing::Combine(
                     testing::Values(string_pair("im1_1280x800.jpg", "im2_1280x800.jpg")),
                     testing::Values(cv::Size(16, 16)),
