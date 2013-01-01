@@ -81,7 +81,7 @@ namespace icf {
     {
         dim3 block(32, 8);
         dim3 grid(shrunk.cols / 32, shrunk.rows / 8);
-        shrink<4><<<grid, block>>>((uchar*)channels.ptr(), channels.step, (uchar*)shrunk.ptr(), shrunk.step);
+        shrink<4><<<grid, block>>>((uchar*)channels.ptr(), (int)channels.step, (uchar*)shrunk.ptr(), (int)shrunk.step);
         cudaSafeCall(cudaDeviceSynchronize());
     }
 
@@ -130,7 +130,7 @@ namespace icf {
         dim3 block(32, 8);
         dim3 grid(bgr.cols / 32, bgr.rows / 8);
 
-        bgr2Luv_d<<<grid, block>>>((const uchar*)bgr.ptr(0), bgr.step, (uchar*)luv.ptr(0), luv.step);
+        bgr2Luv_d<<<grid, block>>>((const uchar*)bgr.ptr(0), (int)bgr.step, (uchar*)luv.ptr(0), (int)luv.step);
 
         cudaSafeCall(cudaDeviceSynchronize());
     }
@@ -261,7 +261,7 @@ namespace icf {
         dim3 block(32, 8);
         dim3 grid(fw / 32, fh / 8);
 
-        magToHist<<<grid, block, 0, stream>>>(mag, angle, nangle.step / sizeof(float), hog, hogluv.step, fh);
+        magToHist<<<grid, block, 0, stream>>>(mag, angle, (int)(nangle.step / sizeof(float)), hog, (int)hogluv.step, fh);
         if (!stream)
         {
             cudaSafeCall( cudaGetLastError() );
