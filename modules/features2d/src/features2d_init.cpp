@@ -125,6 +125,11 @@ CV_INIT_ALGORITHM(GFTTDetector, "Feature2D.GFTT",
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+CV_INIT_ALGORITHM(KAZE, "Feature2D.KAZE",
+                  obj.info()->addParam(obj, "nfeatures", obj.nfeatures));
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class CV_EXPORTS HarrisDetector : public GFTTDetector
 {
 public:
@@ -171,6 +176,7 @@ bool cv::initModule_features2d(void)
     all &= !MSER_info_auto.name().empty();
     all &= !FREAK_info_auto.name().empty();
     all &= !ORB_info_auto.name().empty();
+    all &= !KAZE_info_auto.name().empty();
     all &= !GFTTDetector_info_auto.name().empty();
     all &= !HarrisDetector_info_auto.name().empty();
     all &= !DenseFeatureDetector_info_auto.name().empty();

@@ -404,6 +404,43 @@ typedef ORB OrbFeatureDetector;
 typedef ORB OrbDescriptorExtractor;
 
 /*!
+ KAZE features implementation.
+ http://www.robesafe.com/personal/pablo.alcantarilla/papers/Alcantarilla12eccv.pdf
+*/
+class CV_EXPORTS_W KAZE : public Feature2D
+{
+public:
+
+    CV_WRAP explicit KAZE();
+
+    // returns the descriptor size in bytes
+    int descriptorSize() const;
+
+    // returns the descriptor type
+    int descriptorType() const;
+
+    // Compute the KAZE features and descriptors on an image
+    void operator()(InputArray image, InputArray mask, vector<KeyPoint>& keypoints) const;
+
+    // Compute the KAZE features and descriptors on an image
+    void operator()( InputArray image, InputArray mask, vector<KeyPoint>& keypoints,
+                     OutputArray descriptors, bool useProvidedKeypoints=false ) const;
+
+    AlgorithmInfo* info() const;
+
+protected:
+
+    void computeImpl( const Mat& image, vector<KeyPoint>& keypoints, Mat& descriptors ) const;
+    void detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;
+    
+    CV_PROP_RW int nfeatures;
+};
+
+typedef KAZE KazeFeatureDetector;
+typedef KAZE KazeDescriptorExtractor;
+
+
+/*!
   FREAK implementation
 */
 class CV_EXPORTS FREAK : public DescriptorExtractor
