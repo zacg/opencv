@@ -426,7 +426,7 @@ public:
     void operator()( InputArray image, InputArray mask, vector<KeyPoint>& keypoints,
                      OutputArray descriptors, bool useProvidedKeypoints=false ) const;
 
-    AlgorithmInfo* info() const;
+    //AlgorithmInfo* info() const;
 
 protected:
 
@@ -434,6 +434,7 @@ protected:
     void detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;
     
     CV_PROP_RW int nfeatures;
+
 };
 
 typedef KAZE KazeFeatureDetector;
