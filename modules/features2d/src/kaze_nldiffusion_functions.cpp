@@ -39,7 +39,7 @@ using namespace std;
  * @param ksize_y Kernel size in Y-direction (vertical)
  * @param sigma Kernel standard deviation
  */
-void Gaussian_2D_Convolution(cv::Mat &src, cv::Mat &dst, unsigned int ksize_x,
+void Gaussian_2D_Convolution(const cv::Mat &src, cv::Mat &dst, unsigned int ksize_x,
 							 unsigned int ksize_y, float sigma)
 {
 	// Compute an appropriate kernel size according to the specified sigma
@@ -75,7 +75,7 @@ void Gaussian_2D_Convolution(cv::Mat &src, cv::Mat &dst, unsigned int ksize_x,
  * @param xorder Derivative order in X-direction (horizontal)
  * @param yorder Derivative order in Y-direction (vertical)
  */
-void Image_Derivatives_SD(cv::Mat &src, cv::Mat &dst, unsigned int xorder, unsigned int yorder)
+void Image_Derivatives_SD(const cv::Mat &src, cv::Mat &dst, unsigned int xorder, unsigned int yorder)
 {
    unsigned int norder_x = xorder;
    unsigned int norder_y = yorder;
@@ -169,7 +169,7 @@ void Image_Derivatives_SD(cv::Mat &src, cv::Mat &dst, unsigned int xorder, unsig
  * A Scheme for Coherence-Enhancing Diffusion Filtering with Optimized Rotation Invariance,
  * Journal of Visual Communication and Image Representation 2002
  */
-void Image_Derivatives_Scharr(cv::Mat &src, cv::Mat &dst, unsigned int xorder, unsigned int yorder)
+void Image_Derivatives_Scharr(const cv::Mat &src, cv::Mat &dst, unsigned int xorder, unsigned int yorder)
 {
    // Compute Scharr filter
    cv::Scharr(src,dst,CV_32F,xorder,yorder,1,0,cv::BORDER_DEFAULT);
@@ -191,7 +191,7 @@ void Image_Derivatives_Scharr(cv::Mat &src, cv::Mat &dst, unsigned int xorder, u
  * @param ksize_y Kernel size in Y-direction (vertical) for the Gaussian smoothing kernel
  * @param sigma Standard deviation of the Gaussian kernel
  */
-void Compute_Gaussian_2D_Derivatives(cv::Mat &src, cv::Mat &smooth,cv::Mat &Lx, cv::Mat &Ly,
+void Compute_Gaussian_2D_Derivatives(const cv::Mat &src, cv::Mat &smooth,cv::Mat &Lx, cv::Mat &Ly,
                                      cv::Mat &Lxy, cv::Mat &Lxx, cv::Mat &Lyy,
                                      unsigned int ksize_x, unsigned int ksize_y, float sigma )
 {
@@ -227,7 +227,7 @@ void Compute_Gaussian_2D_Derivatives(cv::Mat &src, cv::Mat &smooth,cv::Mat &Lx, 
  * @param Ly First order image derivative in Y-direction (vertical)
  * @param k Contrast factor parameter
  */
-void PM_G1(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
+void PM_G1(const cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
 {
     cv::exp(-(Lx.mul(Lx) + Ly.mul(Ly))/(k*k),dst);
 }
@@ -244,7 +244,7 @@ void PM_G1(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
  * @param Ly First order image derivative in Y-direction (vertical)
  * @param k Contrast factor parameter
  */
-void PM_G2(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
+void PM_G2(const cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
 {
     dst = 1./(1. + (Lx.mul(Lx) + Ly.mul(Ly))/(k*k));
 }
@@ -263,7 +263,7 @@ void PM_G2(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
  * Applications of nonlinear diffusion in image processing and computer vision,
  * Proceedings of Algorithmy 2000
  */
-void Weickert_Diffusivity(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
+void Weickert_Diffusivity(const cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, float k )
 {
     cv::Mat modg;
     cv::pow((Lx.mul(Lx) + Ly.mul(Ly))/(k*k),4,modg);
@@ -286,14 +286,15 @@ void Weickert_Diffusivity(cv::Mat &src, cv::Mat &dst, cv::Mat &Lx, cv::Mat &Ly, 
  * @param ksize_y Kernel size in Y-direction (vertical) for the Gaussian smoothing kernel
  * @return k contrast factor
  */
-float Compute_K_Percentile(cv::Mat &img, float perc, float gscale, unsigned int nbins, unsigned int ksize_x, unsigned int ksize_y)
+float Compute_K_Percentile(const cv::Mat &img, float perc, float gscale, unsigned int nbins, unsigned int ksize_x, unsigned int ksize_y)
 {
 	float kperc = 0.0, modg = 0.0, lx = 0.0, ly = 0.0;
 	unsigned int nbin = 0, nelements = 0, nthreshold = 0, k = 0;
-	float /*hist[nbins],*/ npoints = 0.0;
+    float npoints = 0.0;
 	float hmax = 0.0;
 
-    std::vector<float> hist(nbins+1, 0.0f);
+    // Create the array for the histogram
+    float *hist = new float[nbins];
 
 	// Create the matrices
 	cv::Mat gaussian = cv::Mat::zeros(img.rows,img.cols,CV_32F);
@@ -301,11 +302,10 @@ float Compute_K_Percentile(cv::Mat &img, float perc, float gscale, unsigned int 
 	cv::Mat Ly = cv::Mat::zeros(img.rows,img.cols,CV_32F);
 	
 	// Set the histogram to zero, just in case
-	/*
-    for( unsigned int i = 0; i < nbins; i++ )
+	for( unsigned int i = 0; i < nbins; i++ )
 	{
 		hist[i] = 0.0;
-	}*/
+	}
 
 	// Perform the Gaussian convolution
 	Gaussian_2D_Convolution(img,gaussian,ksize_x,ksize_y,gscale);
@@ -344,6 +344,12 @@ float Compute_K_Percentile(cv::Mat &img, float perc, float gscale, unsigned int 
 			if( modg != 0.0 )
 			{
 				nbin = floor(nbins*(modg/hmax));
+
+                if( nbin == nbins )
+                {
+                    nbin--;
+                }
+
 				hist[nbin]++;
 				npoints++;
 			}
@@ -367,6 +373,7 @@ float Compute_K_Percentile(cv::Mat &img, float perc, float gscale, unsigned int 
 		kperc = hmax*((float)(k)/(float)nbins);	
 	}
 	
+    delete hist;
 	return kperc;
 }
 
@@ -381,12 +388,11 @@ float Compute_K_Percentile(cv::Mat &img, float perc, float gscale, unsigned int 
  * @param yorder Derivative order in Y-direction (vertical)
  * @param scale Scale factor or derivative size
  */
-void Compute_Scharr_Derivatives(cv::Mat &src, cv::Mat &dst, int xorder, int yorder, int scale )
+void Compute_Scharr_Derivatives(const cv::Mat &src, cv::Mat &dst, int xorder, int yorder, int scale )
 {
    int a_i = 0, b_i = 0, c_i = 0, d_i = 0, e_i = 0, f_i = 0;
    int a_j = 0, b_j = 0, c_j = 0, d_j = 0, e_j = 0, f_j = 0;
    float sum_pos = 0.0, sum_neg = 0.0, w = 0.0, norm = 0.0;
-   float *ptr;
 
    // Values for the Scharr kernel
    w = 10.0/3.0;
@@ -488,23 +494,23 @@ void Compute_Scharr_Derivatives(cv::Mat &src, cv::Mat &dst, int xorder, int yord
 
 /**
  * @brief This function performs a scalar non-linear diffusion step
- * @param Ld Input image
+ * @param Ld2 Output image in the evolution
  * @param c Conductivity image
- * @param Lstep Step Image
+ * @param Ld1 Previous image in the evolution
  * @param stepsize The step size in time units
  * @note Forward Euler Scheme 3x3 stencil
  * The function c is a scalar value that depends on the gradient norm
  * dL_by_ds = d(c dL_by_dx)_by_dx + d(c dL_by_dy)_by_dy
  */
-void NLD_Step_Scalar(cv::Mat &Ld, cv::Mat &c, cv::Mat &Lstep, float stepsize)
+void NLD_Step_Scalar(cv::Mat &Ld2, const cv::Mat &Ld1, const cv::Mat &c, float stepsize)
 {
 	// Auxiliary variables
 	float xpos = 0.0, xneg = 0.0, ypos = 0.0, yneg = 0.0;
 	int ipos = 0, ineg = 0, jpos = 0, jneg = 0;
 
-	for( int i = 0; i < Lstep.rows; i++ )
+    for( int i = 0; i < Ld2.rows; i++ )
 	{
-		for( int j = 0; j < Lstep.cols; j++ )
+        for( int j = 0; j < Ld2.cols; j++ )
 		{
 			ineg = i-1;
 			ipos = i+1;
@@ -512,21 +518,19 @@ void NLD_Step_Scalar(cv::Mat &Ld, cv::Mat &c, cv::Mat &Lstep, float stepsize)
 			jpos = j+1;
 			
 			if( ineg < 0 )	ineg = 0;
-			if( ipos >= Lstep.rows )	ipos = Lstep.rows-1;
+            if( ipos >= Ld2.rows )	ipos = Ld2.rows-1;
 			if( jneg < 0 )	jneg = 0;
-			if( jpos >= Lstep.cols )	jpos = Lstep.cols-1;
+            if( jpos >= Ld2.cols )	jpos = Ld2.cols-1;
 			
-            xpos = ((*(c.ptr<float>(i)+j))+(*(c.ptr<float>(i)+jpos)))*((*(Ld.ptr<float>(i)+jpos))-(*(Ld.ptr<float>(i)+j)));
-            xneg = ((*(c.ptr<float>(i)+jneg))+(*(c.ptr<float>(i)+j)))*((*(Ld.ptr<float>(i)+j))-(*(Ld.ptr<float>(i)+jneg)));
+            xpos = ((*(c.ptr<float>(i)+j))+(*(c.ptr<float>(i)+jpos)))*((*(Ld1.ptr<float>(i)+jpos))-(*(Ld1.ptr<float>(i)+j)));
+            xneg = ((*(c.ptr<float>(i)+jneg))+(*(c.ptr<float>(i)+j)))*((*(Ld1.ptr<float>(i)+j))-(*(Ld1.ptr<float>(i)+jneg)));
 
-            ypos = ((*(c.ptr<float>(i)+j))+(*(c.ptr<float>(ipos)+j)))*((*(Ld.ptr<float>(ipos)+j))-(*(Ld.ptr<float>(i)+j)));
-            yneg = ((*(c.ptr<float>(ineg)+j))+(*(c.ptr<float>(i)+j)))*((*(Ld.ptr<float>(i)+j))-(*(Ld.ptr<float>(ineg)+j)));
+            ypos = ((*(c.ptr<float>(i)+j))+(*(c.ptr<float>(ipos)+j)))*((*(Ld1.ptr<float>(ipos)+j))-(*(Ld1.ptr<float>(i)+j)));
+            yneg = ((*(c.ptr<float>(ineg)+j))+(*(c.ptr<float>(i)+j)))*((*(Ld1.ptr<float>(i)+j))-(*(Ld1.ptr<float>(ineg)+j)));
 
-            *(Lstep.ptr<float>(i)+j) = 0.5*(xpos-xneg+ypos-yneg);
+            *(Ld2.ptr<float>(i)+j) =  *(Ld1.ptr<float>(i)+j) + 0.5*stepsize*(xpos-xneg+ypos-yneg);
 		}
 	}
-	
-	Ld = Ld + stepsize*Lstep;
 }
 
 //*************************************************************************************
@@ -545,7 +549,6 @@ void NLD_Step_Scalar(cv::Mat &Ld, cv::Mat &c, cv::Mat &Lstep, float stepsize)
 bool Check_Maximum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, int col, bool same_img )
 {
 	bool response = true;
-    float k = 0.00001;
 
 	for( int i = row-dsize; i <= row+dsize; i++ )
 	{
@@ -557,7 +560,7 @@ bool Check_Maximum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, 
 				{
 					if( i != row || j != col )
 					{
-                        if( (*(img.ptr<float>(i)+j)+k) > value )
+                        if( (*(img.ptr<float>(i)+j)) > value )
 						{
 							response = false;
 							return response;
@@ -566,7 +569,7 @@ bool Check_Maximum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, 
 				}
 				else
 				{
-                    if( (*(img.ptr<float>(i)+j)+k)> value )
+                    if( (*(img.ptr<float>(i)+j)) > value )
 					{
 						response = false;
 						return response;
@@ -595,7 +598,6 @@ bool Check_Maximum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, 
 bool Check_Minimum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, int col, bool same_img )
 {
 	bool response = true;
-    float k = 0.00001;
 
 	for( int i = row-dsize; i <= row+dsize; i++ )
 	{
@@ -607,7 +609,7 @@ bool Check_Minimum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, 
 				{
 					if( i != row || j != col )
 					{
-                        if( (*(img.ptr<float>(i)+j)-k) <= value )
+                        if( (*(img.ptr<float>(i)+j)) <= value )
 						{
 							response = false;
 							return response;
@@ -616,7 +618,7 @@ bool Check_Minimum_Neighbourhood(cv::Mat &img, int dsize, float value, int row, 
 				}
 				else
 				{
-                    if( (*(img.ptr<float>(i)+j)-k) <= value )
+                    if( (*(img.ptr<float>(i)+j)) <= value )
 					{
 						response = false;
 						return response;

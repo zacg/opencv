@@ -60,54 +60,11 @@ private:
 public:
 
 	   // Constructor
-	   KAZE(void);
-	   KAZE(toptions &options);
-
-	   // Destructor
-	   ~KAZE(void);
-	   
-	   // Setters
-	   void Set_Scale_Offset(float saux){soffset = saux;}
-	   void Set_SDerivatives(float saux){sderivatives = saux;}
-	   void Set_Octave_Max(int oaux){omax = oaux;}
-	   void Set_NSublevels(int naux){nsublevels = naux;}
-	   void Set_Save_Scale_Space_Flag(bool saux){save_scale_space = saux;}
-	   void Set_Image_Width(int waux){img_width = waux;}
-	   void Set_Image_Height(int haux){img_height = haux;}
-	   void Set_Verbosity_Level(bool vaux){verbosity = vaux;}
-	   void Set_KContrast(float kaux){kcontrast = kaux;}
-	   void Set_Detector_Threshold(float daux){dthreshold = daux;}
-	   void Set_Diffusivity_Type(int daux){diffusivity = daux;}
-	   void Set_Descriptor_Mode(int daux){descriptor_mode = daux;}
-	   void Set_Upright(bool aux){use_upright = aux;}
-       void Set_Extended(bool aux){use_extended = aux;}
-
-	   // Getters
-	   float Get_Scale_Offset(void){return soffset;}
-	   float Get_SDerivatives(void){return sderivatives;}
-	   int Get_Octave_Max(void){return omax;}
-	   int Get_NSublevels(void){return nsublevels;}
-	   bool Get_Save_Scale_Space_Flag(void){return save_scale_space;}
-	   int Get_Image_Width(void){return img_width;}
-	   int Get_Image_Height(void){return img_height;}
-	   bool Get_Verbosity_Level(void){return verbosity;}
-	   float Get_KContrast(void){return kcontrast;}
-	   float Get_Detector_Threshold(void){return dthreshold;}
-	   int Get_Diffusivity_Type(void){return diffusivity;}
-	   int Get_Descriptor_Mode(void){return descriptor_mode;}
-	   bool Get_Upright(void){return use_upright;}
-       bool Get_Extended(void){return use_extended;}
-	   double Get_Time_KContrast(void){return tkcontrast;}
-	   double Get_Time_NLScale(void){return tnlscale;}
-	   double Get_Time_Detector(void){return tdetector;}
-	   double Get_Time_Multiscale_Derivatives(void){return tmderivatives;}
-	   double Get_Time_Detector_Response(void){return tdresponse;}
-	   double Get_Time_Descriptor(void){return tdescriptor;}
-	   double Get_Time_Subpixel(void){return tsubpixel;}
+	   explicit KAZE(toptions &options);
 
 	   void Allocate_Memory_Evolution(void);
-	   int Create_Nonlinear_Scale_Space(cv::Mat img);
-       void Compute_KContrast(cv::Mat &img, float kper);
+       int Create_Nonlinear_Scale_Space(const cv::Mat &img);
+       void Compute_KContrast(const cv::Mat &img, const float &kper);
 	   void Compute_Multiscale_Derivatives(void);
 	   
 	   // Feature Detection Methods
@@ -150,6 +107,13 @@ public:
        void Get_MSURF_Upright_Descriptor_128(Ipoint &kpt);
        void Get_MSURF_Descriptor_128(Ipoint &kpt);
 
+       // Descriptor Mode -> 2 G-SURF 64
+       void Get_GSURF_Upright_Descriptor_64(Ipoint &kpt);
+       void Get_GSURF_Descriptor_64(Ipoint &kpt);
+
+       // Descriptor Mode -> 2 G-SURF 128
+       void Get_GSURF_Upright_Descriptor_128(Ipoint &kpt);
+       void Get_GSURF_Descriptor_128(Ipoint &kpt);
 };
 
 // Inline functions

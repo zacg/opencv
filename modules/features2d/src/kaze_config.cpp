@@ -20,7 +20,7 @@
  * @author Pablo F. Alcantarilla
  */
 
-#include "kaze_Ipoint.h"
+#include "kaze_config.h"
 
 //*******************************************************************************
 //*******************************************************************************
@@ -28,19 +28,22 @@
 /**
  * @brief Ipoint default constructor
  */
-Ipoint::Ipoint(void)
+toptions::toptions(void)
 {
-	xf = yf = 0.0;
-	x = y = 0;
-	scale = 0.0;
-	dresponse = 0.0;
-	tevolution = 0.0;
-	octave = 0.0;
-	sublevel = 0.0;
-	descriptor_size = 0;
-	descriptor_mode = 0;
-	laplacian = 0;
-	level = 0;
+    soffset = DEFAULT_SCALE_OFFSET;
+    omax = DEFAULT_OCTAVE_MAX;
+    nsublevels = DEFAULT_NSUBLEVELS;
+    dthreshold = DEFAULT_DETECTOR_THRESHOLD;
+    dthreshold2 = DEFAULT_DETECTOR_THRESHOLD;
+    diffusivity = DEFAULT_DIFFUSIVITY_TYPE;
+    descriptor = DEFAULT_DESCRIPTOR_MODE;
+    sderivatives = DEFAULT_SIGMA_SMOOTHING_DERIVATIVES;
+    upright = DEFAULT_UPRIGHT;
+    extended = DEFAULT_EXTENDED;
+    save_scale_space = DEFAULT_SAVE_SCALE_SPACE;
+    save_keypoints = DEFAULT_SAVE_KEYPOINTS;
+    show_results = DEFAULT_SHOW_RESULTS;
+    verbosity = DEFAULT_VERBOSITY;
 }
 
 //*******************************************************************************

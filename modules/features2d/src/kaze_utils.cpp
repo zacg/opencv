@@ -33,7 +33,7 @@ using namespace std;
  * @param src Input image
  * @param value Minimum value
  */
-void Compute_min_32F(cv::Mat src, float &value)
+void Compute_min_32F(const cv::Mat &src, float &value)
 {
    float aux = 1000.0;
    
@@ -59,7 +59,7 @@ void Compute_min_32F(cv::Mat src, float &value)
  * @param src Input image
  * @param value Maximum value
  */
-void Compute_max_32F(cv::Mat src, float &value)
+void Compute_max_32F(const cv::Mat &src, float &value)
 {
    float aux = 0.0;
 
@@ -85,7 +85,7 @@ void Compute_max_32F(cv::Mat src, float &value)
  * @param src Input/Output image
  * @param value Maximum value
  */
-void Convert_Scale(cv::Mat src)
+void Convert_Scale(cv::Mat &src)
 {
    float min_val = 0, max_val = 0;
 
@@ -106,7 +106,7 @@ void Convert_Scale(cv::Mat src)
  * @param src Input image
  * @param dst Output image
  */
-void Copy_and_Convert_Scale(cv::Mat src, cv::Mat dst)
+void Copy_and_Convert_Scale(const cv::Mat &src, cv::Mat dst)
 {
    float min_val = 0, max_val = 0;
 
@@ -130,7 +130,7 @@ void Copy_and_Convert_Scale(cv::Mat src, cv::Mat dst)
  */
 void Draw_Ipoints(cv::Mat &img, const std::vector<Ipoint> &keypoints)
 {
-    int x = 0, y = 0, laplacian = 0;
+    int x = 0, y = 0;
     float s = 0.0;
 	
 	for( unsigned int i = 0; i < keypoints.size(); i++ )

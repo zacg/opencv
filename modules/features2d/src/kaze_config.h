@@ -30,11 +30,51 @@
 // Some defines
 #define NMAX_CHAR 400
 
+// Options structure
+struct toptions
+{
+	float soffset;
+	int omax;
+	int nsublevels;
+	int img_width;
+	int img_height;
+    int diffusivity;
+	float sderivatives;
+	float dthreshold;
+	float dthreshold2;
+	bool upright;
+    bool extended;
+	int descriptor;
+	bool save_scale_space;
+	bool save_keypoints;
+	bool verbosity;
+    bool show_results;
+
+    toptions();
+};
+
+typedef struct
+{
+	cv::Mat Lx, Ly;	// First order spatial derivatives
+	cv::Mat Lxx, Lxy, Lyy;	// Second order spatial derivatives
+	cv::Mat Lflow;	// Diffusivity image
+	cv::Mat Lt;	// Evolution image
+	cv::Mat Lsmooth; // Smoothed image
+	cv::Mat Lstep; // Evolution step update
+	cv::Mat Ldet; // Detector response
+	float etime;	// Evolution time
+	float esigma;	// Evolution sigma. For linear diffusion t = sigma^2 / 2
+	float octave;	// Image octave
+	float sublevel;	// Image sublevel in each octave
+	int sigma_size;	// Integer esigma. For computing the feature detector responses
+}tevolution;
+
 // Some default options
 const float DEFAULT_SCALE_OFFSET = 1.60; // Base scale offset (sigma units)
 const float DEFAULT_OCTAVE_MAX = 4.0; // Maximum octave evolution of the image 2^sigma (coarsest scale sigma units)
 const int DEFAULT_NSUBLEVELS = 4; // Default number of sublevels per scale level
 const float DEFAULT_DETECTOR_THRESHOLD = 0.001; // Detector response threshold to accept point
+const float DEFAULT_MIN_DETECTOR_THRESHOLD = 0.00001;     // Minimum Detector response threshold to accept point
 const int DEFAULT_DESCRIPTOR_MODE = 1; // Descriptor Mode 0->SURF, 1->M-SURF
 const bool DEFAULT_UPRIGHT = false;  // Upright descriptors, not invariant to rotation
 const bool DEFAULT_EXTENDED = false; // Extended descriptor, dimension 128
@@ -56,68 +96,6 @@ const float CLIPPING_NORMALIZATION_RATIO = 1.6;
 const int CLIPPING_NORMALIZATION_NITER = 5;
 const float PI = 3.14159;
 const float M2_PI = 6.2832;
-
-// Options structure
-struct toptions
-{
-	float soffset;
-	int omax;
-	int nsublevels;
-	int img_width;
-	int img_height;
-    int diffusivity;
-	float sderivatives;
-	float dthreshold;
-	//float dthreshold2;
-	bool upright;
-    bool extended;
-	int descriptor;
-	bool save_scale_space;
-	bool save_keypoints;
-	bool verbosity;
-    bool show_results;
-
-    inline toptions()
-    {
-        soffset = DEFAULT_SCALE_OFFSET;
-        omax    = DEFAULT_OCTAVE_MAX;
-
-        nsublevels = DEFAULT_NSUBLEVELS;
-	    img_width  = 0;
-	    img_height = 0;
-        diffusivity = DEFAULT_DIFFUSIVITY_TYPE;
-	    sderivatives = DEFAULT_SIGMA_SMOOTHING_DERIVATIVES;
-	    dthreshold  = DEFAULT_DETECTOR_THRESHOLD;
-	    //dthreshold2;
-	    upright     = DEFAULT_UPRIGHT;
-        extended    = DEFAULT_EXTENDED;
-	    descriptor  = DEFAULT_DESCRIPTOR_MODE;
-	    
-        save_scale_space = false;
-	    save_keypoints    = false;
-	    
-        verbosity    = DEFAULT_VERBOSITY;
-        show_results = DEFAULT_SHOW_RESULTS;
-    }
-};
-
-typedef struct
-{
-	cv::Mat Lx, Ly;	// First order spatial derivatives
-	cv::Mat Lxx, Lxy, Lyy;	// Second order spatial derivatives
-	cv::Mat Lflow;	// Diffusivity image
-	cv::Mat Lt;	// Evolution image
-	cv::Mat Lsmooth; // Smoothed image
-	cv::Mat Lstep; // Evolution step update
-	cv::Mat Ldet; // Detector response
-	float etime;	// Evolution time
-	float esigma;	// Evolution sigma. For linear diffusion t = sigma^2 / 2
-	float octave;	// Image octave
-	float sublevel;	// Image sublevel in each octave
-	int sigma_size;	// Integer esigma. For computing the feature detector responses
-}tevolution;
-
-
 
 //*************************************************************************************
 //*************************************************************************************

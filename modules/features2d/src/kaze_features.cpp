@@ -38,7 +38,11 @@
 #include <iterator>
 #include "KAZE.h"
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define DEGREE_TO_RADIAN(x) ((x) * CV_PI / 180.0)
+#define RADIAN_TO_DEGREE(x) ((x) * 180.0 / CV_PI)
 
 namespace cv
 {
@@ -55,7 +59,8 @@ namespace cv
 
         // Get the radius for visualization
         aux.scale = kp.size*.5/2.5;
-        aux.angle = kp.angle;
+        aux.angle = DEGREE_TO_RADIAN(kp.angle);
+
         aux.descriptor_size = 64;
     }
 
@@ -64,7 +69,7 @@ namespace cv
         kp.pt.x = src.xf;
         kp.pt.y = src.yf;
 
-        kp.angle    = src.angle;
+        kp.angle    = RADIAN_TO_DEGREE(src.angle);
         kp.response = src.dresponse;
 
         //kp.octave

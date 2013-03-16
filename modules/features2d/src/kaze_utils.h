@@ -33,10 +33,10 @@
 //*************************************************************************************
 
 // Declaration of Functions
-void Compute_min_32F(cv::Mat src, float &value);
-void Compute_max_32F(cv::Mat src, float &value);
-void Convert_Scale(cv::Mat src);
-void Copy_and_Convert_Scale(cv::Mat src, cv::Mat dst);
+void Compute_min_32F(const cv::Mat &src, float &value);
+void Compute_max_32F(const cv::Mat &src, float &value);
+void Convert_Scale(cv::Mat &src);
+void Copy_and_Convert_Scale(const cv::Mat &src, cv::Mat &dst);
 void Draw_Ipoints(cv::Mat &img, const std::vector<Ipoint> &keypoints);
 int fRound(float flt);
 
