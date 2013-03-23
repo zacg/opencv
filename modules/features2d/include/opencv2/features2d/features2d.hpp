@@ -411,7 +411,7 @@ class CV_EXPORTS_W KAZE : public Feature2D
 {
 public:
 
-    CV_WRAP explicit KAZE();
+    CV_WRAP KAZE();
 
     // returns the descriptor size in bytes
     int descriptorSize() const;
@@ -426,7 +426,7 @@ public:
     void operator()( InputArray image, InputArray mask, vector<KeyPoint>& keypoints,
                      OutputArray descriptors, bool useProvidedKeypoints=false ) const;
 
-    //AlgorithmInfo* info() const;
+    AlgorithmInfo* info() const;
 
 protected:
 
