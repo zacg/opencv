@@ -20,6 +20,7 @@
  * @author Pablo F. Alcantarilla
  */
 
+#include "precomp.hpp"
 #include "kaze_utils.h"
 
 // Namespaces
